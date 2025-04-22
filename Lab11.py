@@ -36,24 +36,31 @@ def read_assignments(filename):
 def read_submissions(directory):
     submissions = {}
 
-    for filename in os.listdir(directory):
-        filepath = os.path.join(directory, filename)
-        if os.path.isfile(filepath) and filename not in ['students.txt', 'assignments.txt']:
-            with open(filepath, 'r') as file:
-                content = file.read().strip()
-                if '|' in content:
-                    parts = content.split('|')
-                    if len(parts) == 3:
-                        student_id = parts[0]
-                        assignment_id = parts[1]
-                        percentage = int(parts[2])
+    for root, dirs, files in os.walk(directory):
+        for filename in files:
+            if filename in ['students.txt', 'assignments.txt']:
+                continue
 
-                        if student_id not in submissions:
-                            submissions[student_id] = {}
+            filepath = os.path.join(root, filename)
+            try:
+                with open(filepath, 'r') as file:
+                    content = file.read().strip()
+                    if '|' in content:
+                        parts = content.split('|')
+                        if len(parts) == 3:
+                            student_id = parts[0]
+                            assignment_id = parts[1]
+                            percentage = int(parts[2])
 
-                        submissions[student_id][assignment_id] = percentage
+                            if student_id not in submissions:
+                                submissions[student_id] = {}
+
+                            submissions[student_id][assignment_id] = percentage
+            except:
+                pass
 
     return submissions
+
 
 def calculate_student_grade(student_id, submissions, assignments, total_points):
     if student_id not in submissions:
@@ -88,13 +95,11 @@ def get_assignment_stats(assignment_id, submissions, students):
 
 
 def main():
-
     data_dir = 'data'
     students = read_students(os.path.join(data_dir, 'students.txt'))
     assignments, assignment_names, total_points = read_assignments(os.path.join(data_dir, 'assignments.txt'))
     submissions = read_submissions(data_dir)
 
-    # Display menu
     print("1. Student grade")
     print("2. Assignment statistics")
     print("3. Assignment graph")
@@ -102,8 +107,8 @@ def main():
 
     if selection == '1':
         student_name = input("What is the student's name: ")
-        student_id = None
 
+        student_id = None
         for sid, name in students.items():
             if name == student_name:
                 student_id = sid
