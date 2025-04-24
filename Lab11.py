@@ -134,7 +134,7 @@ def main():
             else:
                 min_score, avg_score, max_score, _ = stats
                 print(f"Min: {min_score}%")
-                print(f"Avg: {round(avg_score)}%")
+                print(f"Avg: {int(avg_score)}%")
                 print(f"Max: {max_score}%")
 
     elif selection == '3':
